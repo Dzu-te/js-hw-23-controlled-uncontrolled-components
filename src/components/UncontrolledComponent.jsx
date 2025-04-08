@@ -13,6 +13,17 @@ export default function UncontrolledComponent() {
     const enteredSecondName = secondNameInputRef.current.value;
     const enteredEmail = emailInputRef.current.value;
     const isTermsAccepted = checkboxRef.current.checked;
+
+    if (
+      !enteredName ||
+      !enteredSecondName ||
+      !enteredEmail ||
+      !isTermsAccepted
+    ) {
+      alert("Please fill all the fields");
+      return;
+    } else alert("Form submitted successfully");
+
     console.log(enteredName, enteredSecondName, enteredEmail, isTermsAccepted);
   };
 
