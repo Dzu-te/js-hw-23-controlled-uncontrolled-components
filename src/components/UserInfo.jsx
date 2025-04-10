@@ -3,27 +3,33 @@ import { useEffect, useState } from "react";
 export default function UserInfo({ id, onBackClick }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
-  console.log(userData);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
 
     const userUrl = `https://jsonplaceholder.typicode.com/users/${id}`;
     const fetchUserData = async () => {
-      const data = await fetch(userUrl).then((response) => response.json());
-      setUserData(data);
-      setLoading(false);
+      try {
+        const response = await fetch(userUrl);
+        if (!response.ok) throw new Error("Failed to fetch user");
+        const data = await response.json();
+        setUserData(data);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+        setError("Failed to load user data.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUserData();
   }, [id]);
 
-  if (loading) {
-    return <h2>Loading...</h2>;
-  }
-  if (!userData) {
-    return <h2>No user data available</h2>;
-  }
+  if (loading) return <h2>Loading...</h2>;
+  if (error) return <h2 className="error">{error}</h2>;
+  if (!userData) return <h2>No user data available</h2>;
 
   return (
     <div>
@@ -44,7 +50,7 @@ export default function UserInfo({ id, onBackClick }) {
         ].join(", ")}
       </p>
       <p>
-        Company: {""}{" "}
+        Company:{" "}
         {[
           userData.company.name,
           userData.company.catchPhrase,
